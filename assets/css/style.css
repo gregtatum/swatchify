@@ -1,0 +1,10 @@
+body {
+	background:#333;
+	color:#ccc;
+	font-family: 'Roboto', sans-serif;
+	text-align: center;
+}
+input[type=file] {
+	background: rgba(255, 255, 255, 0.21);
+	padding: 0.6em;
+}
