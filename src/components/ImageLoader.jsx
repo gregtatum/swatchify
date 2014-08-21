@@ -4,8 +4,12 @@
 
 var ImageLoader = module.exports = React.createClass({
 	
+	propTypes: {
+		onNewImage: React.PropTypes.func.isRequired
+	},
+	
 	render: function() {
-		return	<div>
+		return	<div className="ImageLoader">
 					<input type="file" onChange={this.loadImage} />
 				</div>;
 	},
@@ -17,15 +21,17 @@ var ImageLoader = module.exports = React.createClass({
 		if(!file.type.match(/image.*/)) return;
 		
 		reader = new FileReader();
-		
+				
 		reader.onload = function(readerEvent){
 			
 			var img = new Image();
 			
 			img.onload = function(){
+				
 				if( typeof this.props.onNewImage === 'function' ) {
-					this.props.onNewImage( img );					
+					this.props.onNewImage( img );
 				}
+				
 			}.bind(this)
 			
 			img.src = readerEvent.target.result;

@@ -8,3 +8,12 @@ input[type=file] {
 	background: rgba(255, 255, 255, 0.21);
 	padding: 0.6em;
 }
+
+.Swatchify {
+	max-width:300px;
+	margin:0 auto;
+}
+.ImageSwatch img {
+	max-width:100%;
+	height:auto;
+}

@@ -15,7 +15,7 @@ var paths = {
 	entry	: './src/main.js',
 	js		: ['js/**/*.js', 'js/**/*.jsx', "gulpfile.js"],
 	hint	: ['build/bundle.js', 'gulpfile.js'],
-	build	: './assets/js/',
+	build	: './assets/build/',
 	bundleName : 'bundle.js',
 	minName : 'bundle.min.js',
 	mapName : 'bundle.min.map'
