@@ -17,7 +17,7 @@ var _ctx = _canvas.getContext('2d');
 var _swatchCount = 3;									//For the kMeans operation
 
 function create( img, swatchCount ) {
-
+	
 	var image;
 	var id = Date.now();
 	
@@ -43,11 +43,9 @@ function create( img, swatchCount ) {
 function updateSwatches( image ) {
 	
 	console.log('proceed to calculate kmeans');
-	kMeans.generateSwatches( image.data, _swatchCount ).then(function( data ) {
+	kMeans.generateSwatches( image.data, image.swatchCount ).then(function( data ) {
 		
 		console.log('kmeans has finished');
-		
-		window.foo = true;
 		
 		image.clusters = data.clusters;
 		image.swatches = data.swatches;

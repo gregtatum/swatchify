@@ -9,41 +9,11 @@ var ImageSwatch = module.exports = React.createClass({
 		width: React.PropTypes.number.isRequired
 	},
 	
-    getInitialState: function() {
-    	return {
-			prevSwatches : null,
-			initialSwatchDrawn : false
-		};
-    },
-	
     componentDidMount: function() {
 		
-		var image = this.props.swatchify.currentImage;
+		this.drawSwatches();
 		
-		if( image && image.swatches ) {
-			this.drawSwatches( image.swatches );
-		}
     },
-	
-	componentWillReceiveProps: function( nextProps ) {
-		
-		var nextImage = nextProps.swatchify.currentImage;
-		var prevSwatches = this.state.prevSwatches;
-		var nextSwatches = null;
-		
-		if( nextImage ) {
-			
-			nextSwatches = nextImage.swatches ? nextImage.swatches : null;
-		
-			if( nextSwatches && !_.isEqual( prevSwatches, nextSwatches ) ) {
-				this.drawSwatches( nextSwatches );
-			}
-		}
-		
-		this.setState({
-			prevSwatches : nextSwatches
-		});
-	},
 	
 	render : function() {
 		
@@ -73,27 +43,31 @@ var ImageSwatch = module.exports = React.createClass({
 	},
 	
 	componentDidUpdate : function() {
-		
+		this.drawSwatches();
 	},
 	
 	drawSwatches : function( swatches ) {
-		var ctx = this.refs.swatches.getDOMNode().getContext('2d');
-		var width = this.props.width / swatches.length;
-		var height = width;
-				
-		_.each(swatches, function(swatch, i) {
-			ctx.fillStyle = "rgb(" + swatch.join(',') + ")";
-			ctx.fillRect(
-				width * i, 0,
-				width, height
-			);
-		}, this);
 		
-		if(!this.state.initialSwatchDrawn) {
-			this.setState({
-				initialSwatchDrawn : true
-			});
-			this.forceUpdate();
+		var image, ctx, width, height, swatches;
+		
+		image = this.props.swatchify.currentImage;
+		
+		if( image && image.swatches ) {
+			
+			swatches = image.swatches;
+			
+			ctx = this.refs.swatches.getDOMNode().getContext('2d');
+			width = this.props.width / swatches.length;
+			height = width;
+				
+			_.each(swatches, function(swatch, i) {
+				ctx.fillStyle = "rgb(" + swatch.join(',') + ")";
+				ctx.fillRect(
+					width * i, 0,
+					width, height
+				);
+			}, this);
+		
 		}
 	}
 	

@@ -10,9 +10,8 @@ var SwatchSlider = module.exports = React.createClass({
 		return (
 			<div>
 				<label htmlFor="SwatchSliderInput">Number of Swatches</label><br/>
-				2
 				<input ref="range" type="range" min="2" max="10" step="1" defaultValue={this.props.swatchify.swatchCount} onChange={this.handleChange} />
-				10
+				{this.props.swatchify.swatchCount}
 			</div>
 		)
 	},
