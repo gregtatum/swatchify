@@ -3,10 +3,11 @@ var SwatchifyConstants = require('../constants/SwatchifyConstants');
 
 var SwatchifyActions = {
 
-	createImage: function( img ) {
+	createImage: function( img, swatchCount ) {
 		AppDispatcher.handleViewAction({
 			actionType: SwatchifyConstants.CREATE_IMAGE,
-			img: img
+			img: img,
+			swatchCount: swatchCount
 		});		
 	},
 	

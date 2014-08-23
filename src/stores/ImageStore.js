@@ -16,7 +16,7 @@ var _canvas = document.createElement('canvas');		//A scratchpad canvas element
 var _ctx = _canvas.getContext('2d');
 var _swatchCount = 3;									//For the kMeans operation
 
-function create( img ) {
+function create( img, swatchCount ) {
 
 	var image;
 	var id = Date.now();
@@ -24,6 +24,7 @@ function create( img ) {
 	image = {
 		id: id,
 		img: img,
+		swatchCount: swatchCount,
 		data: getImageData( img ),
 		isCurrent: true,
 		swatches: null,
@@ -35,6 +36,11 @@ function create( img ) {
 	});
 	
 	_images[id] = image;
+	
+	updateSwatches( image );
+}
+
+function updateSwatches( image ) {
 	
 	console.log('proceed to calculate kmeans');
 	kMeans.generateSwatches( image.data, _swatchCount ).then(function( data ) {
@@ -49,6 +55,7 @@ function create( img ) {
 		ImageStore.emitChange();
 		
 	});
+	
 }
 
 function destroy( id ) {
@@ -85,7 +92,15 @@ function getImageData( img ) {
 }
 
 function setSwatchCount( swatchCount ) {
-	_swatchCount = swatchCount;
+	
+	_swatchCount = parseInt(swatchCount, 10);
+	
+	var image = ImageStore.getCurrent();
+	
+	if( image ) {
+		image.swatchCount = _swatchCount;
+		updateSwatches( image );
+	}
 }
 
 var ImageStore = merge(EventEmitter.prototype, {
@@ -98,6 +113,10 @@ var ImageStore = merge(EventEmitter.prototype, {
 		return _.find(_images, function(image) {
 			return image.isCurrent;
 		});	
+	},
+
+	getSwatchCount: function() {
+		return _swatchCount;
 	},
 
 	emitChange: function() {
@@ -118,7 +137,7 @@ AppDispatcher.register(function(payload) {
 
 	switch(action.actionType) {
 		case SwatchifyConstants.CREATE_IMAGE:
-			create( action.img );
+			create( action.img, action.swatchCount );
 			break;
 
 		case SwatchifyConstants.DESTROY_IMAGE:

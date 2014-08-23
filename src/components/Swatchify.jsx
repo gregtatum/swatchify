@@ -4,11 +4,13 @@ var ImageLoader = require('./ImageLoader.jsx');
 var ImageSwatch = require('./ImageSwatch.jsx');
 var ImageStore = require('../stores/ImageStore');
 var SwatchifyActions = require('../actions/SwatchifyActions');
+var SwatchSlider = require('./SwatchSlider.jsx');
 
 function getImageState() {
 	return {
 		allImages: ImageStore.getAll(),
-		currentImage: ImageStore.getCurrent()
+		currentImage: ImageStore.getCurrent(),
+		swatchCount: ImageStore.getSwatchCount()
 	};
 };
 
@@ -50,19 +52,15 @@ var Swatchify = React.createClass({
 		return (
 			<div className="Swatchify" style={divStyle}>
 				<h1>Swatchify</h1>
-				<ImageLoader onNewImage={this.handleNewImage} /> <br/>
-				<ImageSwatch
-					image={this.state.currentImage}
-					addChangeListener={ImageStore.addChangeListener}
-					removeChangeListener={ImageStore.removeChangeListener}
-					swatches={this.props.swatches}
-					width={this.props.width} />
+				<SwatchSlider	swatchify={this.state} swatchCount={this.state.swatchCount} />
+				<ImageLoader	swatchify={this.state} onNewImage={this.handleNewImage} /> <br/>
+				<ImageSwatch	swatchify={this.state} width={this.props.width} />
 			</div>
 		);
 	},
 	
 	handleNewImage : function( img ) {
-		SwatchifyActions.createImage( img );
+		SwatchifyActions.createImage( img, this.state.swatchCount );
 	},
 	
     _handleChange: function() {

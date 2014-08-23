@@ -5,78 +5,82 @@ var _ = require('underscore');
 var ImageSwatch = module.exports = React.createClass({
 	
 	propTypes: {
-		image: React.PropTypes.object,
-		addChangeListener: React.PropTypes.func.isRequired,
-		removeChangeListener: React.PropTypes.func.isRequired
+		swatchify: React.PropTypes.object.isRequired,
+		width: React.PropTypes.number.isRequired
 	},
 	
-	getInitialState: function() {
-	    return {
-			src: null,
-			swatches: null,
-			canvasNeedsUpdating: false
+    getInitialState: function() {
+    	return {
+			prevSwatches : null,
+			initialSwatchDrawn : false
 		};
-	},
+    },
 	
     componentDidMount: function() {
 		
-		var image = this.props.image;
+		var image = this.props.swatchify.currentImage;
 		
 		if( image && image.swatches ) {
-			this.setState({
-				swatches : image.swatches
-			});
 			this.drawSwatches( image.swatches );
 		}
     },
 	
 	componentWillReceiveProps: function( nextProps ) {
 		
-		var nextImage = nextProps.image;
-		var currSwatches;
+		var nextImage = nextProps.swatchify.currentImage;
+		var prevSwatches = this.state.prevSwatches;
 		var nextSwatches = null;
 		
 		if( nextImage ) {
-			currSwatches = this.state.swatches;
+			
 			nextSwatches = nextImage.swatches ? nextImage.swatches : null;
 		
-			if( nextSwatches && !_.isEqual( currSwatches, nextSwatches ) ) {
+			if( nextSwatches && !_.isEqual( prevSwatches, nextSwatches ) ) {
 				this.drawSwatches( nextSwatches );
 			}
 		}
 		
 		this.setState({
-			swatches : nextSwatches
+			prevSwatches : nextSwatches
 		});
 	},
 	
 	render : function() {
 		
-		var image = this.props.image;
-		var divStyle = {};
-		var imgSrc = null;
+		var image, imgSrc, divStyle, swatchCount;
+		
+		image = this.props.swatchify.currentImage;
+		divStyle = {
+			width: this.props.width
+		};
+		imgSrc = null;
 		
 		if(!image || image.swatches === null) {
 			divStyle.display = "none";
+			swatchCount = this.props.swatchify.swatchCount
 		} else {
 			imgSrc = image.img.src;
+			swatchCount = image.swatchCount;
 		}
 			
 		return	(
 			<div className="ImageSwatch" style={divStyle}>
-				<img src={imgSrc} /> <br/>
-				<canvas width={this.props.width} height={this.props.width / this.props.swatches} ref="swatches"/> <br/>
+				<img ref="image" src={imgSrc} /> <br/>
+				<canvas width={this.props.width} height={this.props.width / swatchCount} ref="swatches"/> <br/>
 			</div>
 		);
 		
 	},
 	
+	componentDidUpdate : function() {
+		
+	},
+	
 	drawSwatches : function( swatches ) {
-		
 		var ctx = this.refs.swatches.getDOMNode().getContext('2d');
-		var width = this.props.width / this.props.swatches;
+		var width = this.props.width / swatches.length;
 		var height = width;
-		
+				
 		_.each(swatches, function(swatch, i) {
 			ctx.fillStyle = "rgb(" + swatch.join(',') + ")";
 			ctx.fillRect(
@@ -85,7 +89,12 @@ var ImageSwatch = module.exports = React.createClass({
 			);
 		}, this);
 		
-		console.log('drawn Swatches');
+		if(!this.state.initialSwatchDrawn) {
+			this.setState({
+				initialSwatchDrawn : true
+			});
+			this.forceUpdate();
+		}
 	}
 	
 });
