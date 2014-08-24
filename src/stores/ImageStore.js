@@ -15,6 +15,11 @@ var _images = {};									//The collection of images
 var _canvas = document.createElement('canvas');		//A scratchpad canvas element
 var _ctx = _canvas.getContext('2d');
 var _swatchCount = 3;									//For the kMeans operation
+var _calculatingSwatches = {
+	isCalculating : false,
+	timestamp : Date.now()
+};
+
 
 function create( img, swatchCount ) {
 	
@@ -38,9 +43,16 @@ function create( img, swatchCount ) {
 	_images[id] = image;
 	
 	updateSwatches( image );
+	
 }
 
 function updateSwatches( image ) {
+	
+	var now = Date.now();
+	_calculatingSwatches.isCalculating = true;
+	_calculatingSwatches.timestamp = now;
+	
+	ImageStore.emitChange();
 	
 	console.log('proceed to calculate kmeans');
 	kMeans.generateSwatches( image.data, image.swatchCount ).then(function( data ) {
@@ -49,6 +61,11 @@ function updateSwatches( image ) {
 		
 		image.clusters = data.clusters;
 		image.swatches = data.swatches;
+		
+		if( _calculatingSwatches.timestamp === now ) {
+			_calculatingSwatches.isCalculating = false;
+		}
+		
 		
 		ImageStore.emitChange();
 		
@@ -99,6 +116,7 @@ function setSwatchCount( swatchCount ) {
 		image.swatchCount = _swatchCount;
 		updateSwatches( image );
 	}
+	
 }
 
 var ImageStore = merge(EventEmitter.prototype, {
@@ -111,6 +129,10 @@ var ImageStore = merge(EventEmitter.prototype, {
 		return _.find(_images, function(image) {
 			return image.isCurrent;
 		});	
+	},
+	
+	isCalculating: function() {
+		return _calculatingSwatches.isCalculating;
 	},
 
 	getSwatchCount: function() {

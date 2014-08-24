@@ -6,12 +6,18 @@ var _ = require('underscore');
 
 var SwatchSlider = module.exports = React.createClass({
 
+    getInitialState: function() {
+    	return {
+			swatchCount: this.props.swatchify.swatchCount
+		};
+    },
+	
 	render : function() {
 		return (
 			<div>
 				<label htmlFor="SwatchSliderInput">Number of Swatches</label><br/>
 				<input ref="range" type="range" min="2" max="10" step="1" defaultValue={this.props.swatchify.swatchCount} onChange={this.handleChange} />
-				{this.props.swatchify.swatchCount}
+				{this.state.swatchCount}
 			</div>
 		)
 	},
@@ -42,9 +48,13 @@ var SwatchSlider = module.exports = React.createClass({
 			SwatchifyActions.setSwatches( value );
 		}, 500);
 		
-		//Immediately grab the value, but wait for the debounce to try and change
+		//Immediately grab the value, but wait for the debounce to try and recalculate
 		return function(e) {
 			debouncedChange( e.target.value );
+			
+			this.setState({
+				swatchCount: e.target.value
+			});
 		};
 	}()
 	

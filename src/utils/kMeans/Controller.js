@@ -1,28 +1,59 @@
 var clusterfck = require("clusterfck");
 var _ = require('underscore');
-var utils = require('./Color');
+var utils = require('../Color');
+
 
 var kMeans = module.exports = {
 	
-	generateSwatches : function( image, swatchCount ) {
+	kMeansResolves : {},
+	
+	setColors : function( image ) {
+		
+		var colors = kMeans.convertToRgbRows( image.data );
+		
+		worker.postMessage({
+			action: 'setColors',
+			colors: colors
+		});
+	},
+	
+	generateSwatches : function( swatchCount ) {
 		
 		return new Promise(function(resolve, reject) {
 			
-			_.defer(function() {
-
-				var colors = kMeans.convertToRgbRows( image.data );
-				var clusters = clusterfck.kmeans( colors, swatchCount );
-				var swatches = kMeans.reduceToSwatches( clusters );
+			var now = Date.now();
+						
+			kMeans.kMeansResolves[now] = resolve;
 			
-				resolve({
-					clusters : clusters,
-					swatches : swatches
-				});
-				
+			worker.postMessage({
+				action: 'kMeans',
+				swatchCount: swatchCount,
+				timestamp: now
 			});
 			
 		}.bind(this));
 		
+	},
+	
+	handleMessage: function(e) {
+		debugger;
+		var resolve, clusters, swatches;
+		
+		resolve = kMeans.kMeansResolves[e.data.timestamp];
+		
+		if( message ) {
+			
+			clusters = e.data.clusters;
+			swatches = kMeans.reduceToSwatches( clusters );
+			
+			message.resolve({
+				clusters: clusters,
+				swatches: swatches
+			});
+			
+		};
+		
+		delete kMeans.messages[e.data.timestamp];
 	},
 	
 	reduceToSwatches : function( clusters ) {
@@ -95,3 +126,6 @@ var kMeans = module.exports = {
 	}
 	
 };
+
+var worker = new Worker('src/utils/kMeans/Worker.js');
+worker.addEventListener('message', kMeans.handleMessage);

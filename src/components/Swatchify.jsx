@@ -10,7 +10,8 @@ function getImageState() {
 	return {
 		allImages: ImageStore.getAll(),
 		currentImage: ImageStore.getCurrent(),
-		swatchCount: ImageStore.getSwatchCount()
+		swatchCount: ImageStore.getSwatchCount(),
+		isCalculating: ImageStore.isCalculating()
 	};
 };
 

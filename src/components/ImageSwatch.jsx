@@ -21,9 +21,9 @@ var ImageSwatch = module.exports = React.createClass({
 		
 		image = this.props.swatchify.currentImage;
 		divStyle = {
-			width: this.props.width
+			width: this.props.width,
+			opacity: this.props.swatchify.isCalculating ? 0.2 : 1
 		};
-		imgSrc = null;
 		
 		if(!image || image.swatches === null) {
 			divStyle.display = "none";
