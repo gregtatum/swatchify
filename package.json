@@ -1,11 +1,13 @@
 {
-  "name": "greg-browserify",
-  "version": "0.0.0",
-  "description": "",
+  "name": "swatchify",
+  "version": "0.0.1",
+  "description": "A color analysis tool",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Greg Tatum",
+  "homepage": "http://gregtatum.com/app/swatchify/",
+  "license": "GPLv3",
   "dependencies": {
     "clusterfck": "^0.5.2",
     "jquery": "^2.1.1",
